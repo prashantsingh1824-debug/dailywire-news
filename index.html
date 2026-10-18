@@ -535,6 +535,7 @@
         if (controller !== activeController) return;  
   
         statusElement.textContent = "Unable to update headlines.";  
+        console.error("News API error:",error);
         showMessage(  
           "The news service is temporarily unavailable. Please try Refresh again shortly."  
         );  
