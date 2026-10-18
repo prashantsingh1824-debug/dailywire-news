@@ -1,0 +1,586 @@
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+  <meta charset="UTF-8" />  
+  <meta name="viewport" content="width=device-width, initial-scale=1" />  
+  <meta name="theme-color" content="#101828" />  
+  <title>DailyWire — News Around the World</title>    <style>  
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');  
+  
+    :root {  
+      --background: #f7f7f2;  
+      --paper: #fff;  
+      --text: #101828;  
+      --muted: #667085;  
+      --line: #e5e7eb;  
+      --accent: #d6472c;  
+    }  
+  
+    * { box-sizing: border-box; }  
+  
+    body {  
+      margin: 0;  
+      color: var(--text);  
+      background: var(--background);  
+      font-family: "DM Sans", sans-serif;  
+    }  
+  
+    button, input { font: inherit; }  
+    button, a { -webkit-tap-highlight-color: transparent; }  
+    button { cursor: pointer; }  
+    a { color: inherit; }  
+  
+    .topbar {  
+      padding: 11px 24px;  
+      color: white;  
+      background: var(--text);  
+      font-size: 12px;  
+      text-align: center;  
+      letter-spacing: .06em;  
+    }  
+  
+    .container {  
+      width: min(1180px, calc(100% - 40px));  
+      margin: auto;  
+    }  
+  
+    header {  
+      display: flex;  
+      justify-content: space-between;  
+      align-items: center;  
+      gap: 24px;  
+      padding: 30px 0;  
+      border-bottom: 1px solid var(--line);  
+    }  
+  
+    .logo {  
+      text-decoration: none;  
+      font-family: "Playfair Display", Georgia, serif;  
+      font-size: 36px;  
+      font-weight: 700;  
+      letter-spacing: -1.8px;  
+    }  
+  
+    .logo span { color: var(--accent); }  
+  
+    .date {  
+      color: var(--muted);  
+      font-size: 13px;  
+      text-align: right;  
+    }  
+  
+    nav {  
+      display: flex;  
+      gap: 8px;  
+      padding: 18px 0;  
+      overflow-x: auto;  
+      border-bottom: 1px solid var(--line);  
+    }  
+  
+    nav button {  
+      padding: 9px 17px;  
+      white-space: nowrap;  
+      border: 0;  
+      border-radius: 30px;  
+      color: var(--muted);  
+      background: transparent;  
+    }  
+  
+    nav button:hover { background: #ebebe6; }  
+  
+    nav button[aria-pressed="true"] {  
+      color: white;  
+      background: var(--text);  
+    }  
+  
+    .intro {  
+      display: flex;  
+      justify-content: space-between;  
+      align-items: flex-end;  
+      gap: 24px;  
+      padding: 42px 0 28px;  
+    }  
+  
+    .eyebrow {  
+      display: flex;  
+      align-items: center;  
+      gap: 8px;  
+      margin: 0 0 12px;  
+      color: var(--accent);  
+      font-size: 11px;  
+      font-weight: 700;  
+      letter-spacing: .14em;  
+      text-transform: uppercase;  
+    }  
+  
+    .dot {  
+      width: 7px;  
+      height: 7px;  
+      border-radius: 50%;  
+      background: var(--accent);  
+    }  
+  
+    h1 {  
+      margin: 0;  
+      font-family: "Playfair Display", Georgia, serif;  
+      font-size: clamp(36px, 5vw, 58px);  
+      line-height: 1.1;  
+      letter-spacing: -1.6px;  
+    }  
+  
+    .subtitle {  
+      margin: 14px 0 0;  
+      color: var(--muted);  
+      font-size: 14px;  
+      line-height: 1.6;  
+    }  
+  
+    form {  
+      display: flex;  
+      width: min(100%, 340px);  
+      padding: 5px;  
+      border: 1px solid var(--line);  
+      border-radius: 9px;  
+      background: var(--paper);  
+    }  
+  
+    input {  
+      min-width: 0;  
+      width: 100%;  
+      padding: 10px;  
+      border: 0;  
+      outline-offset: 3px;  
+      background: transparent;  
+    }  
+  
+    .search-button {  
+      padding: 10px 15px;  
+      border: 0;  
+      border-radius: 6px;  
+      color: white;  
+      background: var(--text);  
+    }  
+  
+    .status-row {  
+      display: flex;  
+      justify-content: space-between;  
+      align-items: center;  
+      gap: 16px;  
+      margin-bottom: 20px;  
+      padding-bottom: 16px;  
+      border-bottom: 1px solid var(--line);  
+      color: var(--muted);  
+      font-size: 12px;  
+    }  
+  
+    #refresh {  
+      border: 0;  
+      padding: 6px 0 6px 12px;  
+      color: var(--accent);  
+      background: transparent;  
+      font-weight: 700;  
+    }  
+  
+    #refresh:disabled { opacity: .5; cursor: wait; }  
+  
+    .grid {  
+      display: grid;  
+      grid-template-columns: repeat(3, minmax(0, 1fr));  
+      gap: 28px;  
+      padding-bottom: 50px;  
+    }  
+  
+    .card {  
+      overflow: hidden;  
+      border: 1px solid var(--line);  
+      border-radius: 12px;  
+      background: var(--paper);  
+      transition: transform .2s, box-shadow .2s;  
+    }  
+  
+    .card:hover {  
+      transform: translateY(-3px);  
+      box-shadow: 0 10px 30px #1018280c;  
+    }  
+  
+    .card a {  
+      display: block;  
+      height: 100%;  
+      text-decoration: none;  
+    }  
+  
+    .image-wrap {  
+      height: 210px;  
+      overflow: hidden;  
+      background:  
+        radial-gradient(circle at 75% 30%, #d9c6a5 0, transparent 45%),  
+        linear-gradient(135deg, #e8e4da, #c0cbd0);  
+    }  
+  
+    .card img {  
+      display: block;  
+      width: 100%;  
+      height: 100%;  
+      object-fit: cover;  
+    }  
+  
+    .card-body { padding: 22px; }  
+  
+    .source {  
+      margin: 0 0 12px;  
+      color: var(--accent);  
+      font-size: 10px;  
+      font-weight: 700;  
+      letter-spacing: .08em;  
+      text-transform: uppercase;  
+      overflow-wrap: anywhere;  
+    }  
+  
+    .card h2 {  
+      margin: 0 0 22px;  
+      font-family: "Playfair Display", Georgia, serif;  
+      font-size: 23px;  
+      line-height: 1.35;  
+    }  
+  
+    .card-meta {  
+      display: flex;  
+      justify-content: space-between;  
+      gap: 12px;  
+      color: var(--muted);  
+      font-size: 11px;  
+    }  
+  
+    .message {  
+      grid-column: 1 / -1;  
+      padding: 70px 24px;  
+      text-align: center;  
+      border: 1px dashed #d0d5dd;  
+      border-radius: 12px;  
+      color: var(--muted);  
+      line-height: 1.7;  
+    }  
+  
+    footer {  
+      padding: 25px 0;  
+      border-top: 1px solid var(--line);  
+      color: var(--muted);  
+      font-size: 12px;  
+      line-height: 1.8;  
+    }  
+  
+    footer .container {  
+      display: flex;  
+      justify-content: space-between;  
+      gap: 20px;  
+    }  
+  
+    @media (min-width: 950px) {  
+      .card:first-child { grid-column: span 2; }  
+      .card:first-child .image-wrap { height: 330px; }  
+      .card:first-child h2 { font-size: 33px; }  
+    }  
+  
+    @media (max-width: 800px) {  
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }  
+      .intro { align-items: stretch; flex-direction: column; }  
+      form { width: 100%; }  
+    }  
+  
+    @media (max-width: 520px) {  
+      .container { width: calc(100% - 28px); }  
+      header { padding: 23px 0; }  
+      .logo { font-size: 30px; }  
+      .date { max-width: 125px; font-size: 11px; }  
+      .grid { grid-template-columns: 1fr; gap: 20px; }  
+      .intro { padding-top: 30px; }  
+      footer .container { flex-direction: column; gap: 5px; }  
+    }  
+  
+    @media (prefers-reduced-motion: reduce) {  
+      * { transition: none !important; }  
+    }  
+  </style>  </head>  <body>  
+  <div class="topbar">A WORLD OF STORIES. ONE PLACE TO STAY INFORMED.</div>    <div class="container">  
+    <header>  
+      <a class="logo" href="./">DailyWire<span>.</span></a>  
+      <div class="date" id="today"></div>  
+    </header>  <nav aria-label="News categories">  
+  <button type="button" data-category="latest" aria-pressed="true">Latest</button>  
+  <button type="button" data-category="world" aria-pressed="false">World</button>  
+  <button type="button" data-category="technology" aria-pressed="false">Technology</button>  
+  <button type="button" data-category="business" aria-pressed="false">Business</button>  
+  <button type="button" data-category="science" aria-pressed="false">Science</button>  
+  <button type="button" data-category="health" aria-pressed="false">Health</button>  
+  <button type="button" data-category="sports" aria-pressed="false">Sports</button>  
+  <button type="button" data-category="entertainment" aria-pressed="false">Culture</button>  
+</nav>  
+
+<main>  
+  <section class="intro" aria-labelledby="page-title">  
+    <div>  
+      <p class="eyebrow"><span class="dot"></span> The daily briefing</p>  
+      <h1 id="page-title">The world, unfolding.</h1>  
+      <p class="subtitle">Explore the latest headlines. Discover what matters to you.</p>  
+    </div>  
+
+    <form id="search-form" role="search">  
+      <input  
+        id="search"  
+        type="search"  
+        aria-label="Search news"  
+        placeholder="Search a topic…"  
+        maxlength="120"  
+      />  
+      <button class="search-button" type="submit">Search</button>  
+    </form>  
+  </section>  
+
+  <div class="status-row">  
+    <span id="status" role="status" aria-live="polite">Loading headlines…</span>  
+    <button id="refresh" type="button">↻ Refresh</button>  
+  </div>  
+
+  <section class="grid" id="articles" aria-label="Latest news" aria-busy="true"></section>  
+</main>
+
+  </div>    <footer>  
+    <div class="container">  
+      <span>DailyWire — Stay curious. Stay informed.</span>  
+      <span>News discovery powered by <a href="https://www.gdeltproject.org/" target="_blank" rel="noopener noreferrer">GDELT</a>. Articles belong to their publishers.</span>  
+    </div>  
+  </footer>    <script>  
+    const articlesElement = document.getElementById("articles");  
+    const statusElement = document.getElementById("status");  
+    const refreshButton = document.getElementById("refresh");  
+    const searchInput = document.getElementById("search");  
+  
+    const categoryQueries = {  
+      latest: "(world OR business OR technology OR science OR sports)",  
+      world: "(diplomacy OR election OR international OR government)",  
+      technology: "(technology OR software OR robotics OR cybersecurity)",  
+      business: "(business OR economy OR markets OR finance)",  
+      science: "(science OR astronomy OR research OR discovery)",  
+      health: "(health OR medicine OR healthcare OR wellness)",  
+      sports: "(sports OR football OR basketball OR tennis)",  
+      entertainment: "(film OR music OR arts OR entertainment)"  
+    };  
+  
+    let currentCategory = "latest";  
+    let activeSearch = "";  
+    let activeController;  
+  
+    document.getElementById("today").textContent =  
+      new Intl.DateTimeFormat(undefined, {  
+        weekday: "long",  
+        month: "long",  
+        day: "numeric",  
+        year: "numeric"  
+      }).format(new Date());  
+  
+    function safeWebUrl(value) {  
+      try {  
+        const url = new URL(value);  
+        return ["https:", "http:"].includes(url.protocol) ? url.href : null;  
+      } catch {  
+        return null;  
+      }  
+    }  
+  
+    function parseDate(value) {  
+      const match = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/.exec(value || "");  
+      if (!match) return null;  
+  
+      const [, year, month, day, hour, minute, second] = match;  
+      const date = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}Z`);  
+      return Number.isNaN(date.getTime()) ? null : date;  
+    }  
+  
+    function showMessage(text) {  
+      const message = document.createElement("div");  
+      message.className = "message";  
+      message.textContent = text;  
+      articlesElement.replaceChildren(message);  
+    }  
+  
+    function renderArticles(articles) {  
+      const fragment = document.createDocumentFragment();  
+      const seen = new Set();  
+  
+      for (const article of articles) {  
+        const url = safeWebUrl(article.url);  
+        if (!url || !article.title || seen.has(url)) continue;  
+        seen.add(url);  
+  
+        const card = document.createElement("article");  
+        card.className = "card";  
+  
+        const link = document.createElement("a");  
+        link.href = url;  
+        link.target = "_blank";  
+        link.rel = "noopener noreferrer";  
+  
+        const imageWrap = document.createElement("div");  
+        imageWrap.className = "image-wrap";  
+  
+        const imageUrl = safeWebUrl(article.socialimage);  
+        if (imageUrl) {  
+          const image = document.createElement("img");  
+          image.src = imageUrl;  
+          image.alt = "";  
+          image.loading = "lazy";  
+          image.referrerPolicy = "no-referrer";  
+          image.addEventListener("error", () => image.remove(), { once: true });  
+          imageWrap.append(image);  
+        }  
+  
+        const body = document.createElement("div");  
+        body.className = "card-body";  
+  
+        const source = document.createElement("p");  
+        source.className = "source";  
+        source.textContent = article.domain || new URL(url).hostname;  
+  
+        const title = document.createElement("h2");  
+        title.textContent = article.title;  
+  
+        const meta = document.createElement("div");  
+        meta.className = "card-meta";  
+  
+        const date = document.createElement("span");  
+        const indexedAt = parseDate(article.seendate);  
+        date.textContent = indexedAt  
+          ? `Indexed ${new Intl.DateTimeFormat(undefined, {  
+              month: "short",  
+              day: "numeric",  
+              hour: "numeric",  
+              minute: "2-digit"  
+            }).format(indexedAt)}`  
+          : "Recent coverage";  
+  
+        const read = document.createElement("span");  
+        read.textContent = "Read story ↗";  
+  
+        meta.append(date, read);  
+        body.append(source, title, meta);  
+        link.append(imageWrap, body);  
+        card.append(link);  
+        fragment.append(card);  
+      }  
+  
+      if (!seen.size) {  
+        showMessage("No stories found. Try another topic or category.");  
+      } else {  
+        articlesElement.replaceChildren(fragment);  
+      }  
+  
+      return seen.size;  
+    }  
+  
+    async function loadNews() {  
+      activeController?.abort();  
+      const controller = new AbortController();  
+      activeController = controller;  
+      const timeout = setTimeout(() => controller.abort(), 25000);  
+  
+      refreshButton.disabled = true;  
+      articlesElement.setAttribute("aria-busy", "true");  
+      statusElement.textContent = "Finding the latest headlines…";  
+  
+      if (!articlesElement.children.length) {  
+        showMessage("Gathering stories from around the world…");  
+      }  
+  
+      // Strip query operators so search input stays a simple phrase.  
+      const cleanSearch = activeSearch  
+        .replace(/[^\p{L}\p{N}\s'-]/gu, " ")  
+        .replace(/\s+/g, " ")  
+        .trim();  
+  
+      const topic = cleanSearch  
+        ? `"${cleanSearch}"`  
+        : categoryQueries[currentCategory];  
+  
+      const params = new URLSearchParams({  
+        query: `${topic} sourcelang:english`,  
+        mode: "ArtList",  
+        format: "json",  
+        maxrecords: "30",  
+        timespan: "24h",  
+        sort: "DateDesc"  
+      });  
+  
+      try {  
+        const response = await fetch(  
+          `https://api.gdeltproject.org/api/v2/doc/doc?${params}`,  
+          { signal: controller.signal }  
+        );  
+  
+        if (!response.ok) throw new Error("News service unavailable");  
+  
+        const data = await response.json();  
+        if (controller !== activeController) return;  
+        if (!Array.isArray(data.articles)) {  
+          throw new Error("Unexpected news response");  
+        }  
+  
+        const count = renderArticles(data.articles);  
+        const time = new Intl.DateTimeFormat(undefined, {  
+          hour: "numeric",  
+          minute: "2-digit"  
+        }).format(new Date());  
+  
+        statusElement.textContent =  
+          `${count} stories · Updated ${time} · Refreshes every 5 min`;  
+      } catch (error) {  
+        if (controller !== activeController) return;  
+  
+        statusElement.textContent = "Unable to update headlines.";  
+        showMessage(  
+          "The news service is temporarily unavailable. Please try Refresh again shortly."  
+        );  
+      } finally {  
+        clearTimeout(timeout);  
+        if (controller === activeController) {  
+          refreshButton.disabled = false;  
+          articlesElement.setAttribute("aria-busy", "false");  
+        }  
+      }  
+    }  
+  
+    document.querySelectorAll("[data-category]").forEach(button => {  
+      button.addEventListener("click", () => {  
+        currentCategory = button.dataset.category;  
+        activeSearch = "";  
+        searchInput.value = "";  
+  
+        document.querySelectorAll("[data-category]").forEach(item => {  
+          item.setAttribute("aria-pressed", String(item === button));  
+        });  
+  
+        loadNews();  
+      });  
+    });  
+  
+    document.getElementById("search-form").addEventListener("submit", event => {  
+      event.preventDefault();  
+      activeSearch = searchInput.value.trim();  
+  
+      document.querySelectorAll("[data-category]").forEach(button => {  
+        button.setAttribute(  
+          "aria-pressed",  
+          String(!activeSearch && button.dataset.category === currentCategory)  
+        );  
+      });  
+  
+      loadNews();  
+    });  
+  
+    refreshButton.addEventListener("click", loadNews);  
+  
+    setInterval(() => {  
+      if (!document.hidden && !refreshButton.disabled) loadNews();  
+    }, 5 * 60 * 1000);  
+  
+    loadNews();  
+  </script>  </body>  
+</html>
